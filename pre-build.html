@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce & Admin Template (Cloud Edition)</title>
+    <!-- Chart.js for Interactive Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary: #1e293b;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; }
+
+        /* --- TYPOGRAPHY & UTILITIES --- */
+        h1, h2, h3 { margin-bottom: 1rem; color: var(--secondary); }
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 1.8rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; color: var(--text-muted); }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-0 { margin-bottom: 0 !important; }
+        
+        /* --- NAVIGATION --- */
+        header { background-color: var(--secondary); color: white; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem; }
+        .logo { font-size: 1.5rem; font-weight: bold; text-decoration: none; color: white; }
+        nav ul { list-style: none; display: flex; gap: 1rem; align-items: center; }
+        nav ul li { position: relative; }
+        nav ul li a { color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: var(--radius); transition: background 0.3s; display: block; }
+        nav ul li a:hover { background-color: rgba(255,255,255,0.1); }
+        .dropdown { display: none; position: absolute; top: 100%; left: 0; background: white; min-width: 200px; box-shadow: var(--shadow); border-radius: var(--radius); overflow: hidden; z-index: 200; flex-direction: column; }
+        nav ul li:hover .dropdown { display: flex; }
+        .dropdown a { color: var(--text-dark); padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); border-radius: 0; }
+        .dropdown a:hover { background-color: var(--bg-light); color: var(--primary); }
+
+        /* --- LAYOUT & SPA LOGIC (CSS ONLY) --- */
+        .main-content { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; min-height: 75vh; }
+        .page-section { display: none; background: var(--bg-white); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page-section:target { display: block; }
+        .page-section:target ~ #home { display: none; }
+        #home { display: block; }
+
+        /* --- USER & ADMIN AUTHENTICATION (CSS ONLY VISUALS) --- */
+        .logged-in-nav, .admin-panel-nav { display: none !important; }
+        .customer-logo, .admin-logo { display: none !important; }
+        
+        #customer-state:checked ~ header .default-logo { display: none !important; }
+        #customer-state:checked ~ header .customer-logo { display: block !important; }
+        #customer-state:checked ~ header .logged-in-nav { display: block !important; }
+        #customer-state:checked ~ header .guest-nav,
+        #customer-state:checked ~ header .customer-hide { display: none !important; }
+
+        #admin-state:checked ~ header .default-logo { display: none !important; }
+        #admin-state:checked ~ header .admin-logo { display: block !important; }
+        #admin-state:checked ~ header .admin-panel-nav { display: flex !important; }
+        #admin-state:checked ~ header .admin-login-nav,
+        #admin-state:checked ~ header .guest-nav,
+        #admin-state:checked ~ header .logged-in-nav { display: none !important; }
+        
+        .logout-btn { display: block; color: var(--danger); padding: 0.75rem 1rem; cursor: pointer; border-top: 1px solid var(--border-color); font-weight: bold; background: none; border: none; text-align: left; width: 100%; }
+        .logout-btn:hover { background-color: var(--bg-light); color: var(--danger); }
+
+        #admin-state:not(:checked) ~ main .admin-page:target > * { display: none; }
+        #admin-state:not(:checked) ~ main .admin-page:target::after { content: "🔒 Administrator access required."; display: block; text-align: center; font-size: 1.5rem; color: var(--danger); padding: 4rem 1rem; font-weight: bold; }
+        
+        #customer-state:not(:checked) ~ main .user-protected-page:target > * { display: none; }
+        #customer-state:not(:checked) ~ main .user-protected-page:target::after { content: "🔒 Customer access required. Please login."; display: block; text-align: center; font-size: 1.5rem; color: var(--primary); padding: 4rem 1rem; font-weight: bold; }
+
+        /* --- FORMS & INPUTS --- */
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; }
+        textarea { resize: vertical; min-height: 100px; }
+        .radio-group { display: flex; gap: 1rem; margin-top: 0.5rem; }
+        
+        button, .btn { background-color: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: var(--radius); font-size: 1rem; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.3s, transform 0.1s; text-align: center; }
+        button:hover, .btn:hover { background-color: var(--primary-hover); }
+        button:active, .btn:active { transform: scale(0.98); } 
+        
+        *:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; border-radius: 2px; }
+        .btn-danger { background-color: var(--danger); }
+        .btn-outline { background-color: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background-color: var(--primary); color: white; }
+        .btn-success { background-color: var(--success); }
+
+        /* --- COMPONENTS --- */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+
+        /* Enhanced Card Hover Effects */
+        .card, .stat-card { border: 1px solid var(--border-color); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover, .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+        
+        .card-img { width: 100%; height: 200px; background-color: #cbd5e1; object-fit: cover; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.2rem; }
+        .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .price { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 1rem 0; }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--bg-light); font-weight: 600; color: var(--secondary); }
+        tr:hover { background-color: #f1f5f9; }
+
+        .stat-card { background: var(--bg-light); padding: 1.5rem; border-left: 4px solid var(--primary); border-top: none; border-right: none; border-bottom: none; }
+        .stat-card h3 { font-size: 2rem; margin: 0; color: var(--primary); }
+        .stat-card p { margin: 0; font-weight: bold; color: var(--secondary); }
+
+        .rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 0.5rem; font-size: 2rem; }
+        .rating input { display: none; }
+        .rating label { color: #cbd5e1; cursor: pointer; display: inline-block; }
+        .rating label:hover, .rating label:hover ~ label, .rating input:checked ~ label { color: #fbbf24; }
+
+        /* --- ADVANCED CSS-ONLY FEATURES --- */
+        .css-tabs { display: flex; flex-wrap: wrap; margin: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .tab-radio { display: none; }
+        .tab-label { padding: 0.75rem 1.5rem; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 500; color: var(--text-muted); transition: color 0.3s; }
+        .tab-label:hover { color: var(--primary); }
+        .tab-content { display: none; width: 100%; order: 1; padding: 1.5rem 0; animation: fadeIn 0.3s ease; }
+        .tab-radio:checked + .tab-label { border-bottom-color: var(--primary); color: var(--primary); font-weight: bold; }
+        .tab-radio:checked + .tab-label + .tab-content { display: block; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-overlay:target { display: flex; }
+        .modal-content { background: white; padding: 2rem; border-radius: var(--radius); max-width: 400px; width: 90%; position: relative; box-shadow: var(--shadow); animation: fadeIn 0.3s ease; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; text-decoration: none; color: var(--text-muted); font-size: 1.5rem; line-height: 1; }
+        .modal-close:hover { color: var(--danger); }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 1rem 1.5rem; background: var(--secondary); color: white; border-radius: var(--radius); box-shadow: var(--shadow); animation: slideIn 0.3s ease forwards; display: flex; align-items: center; min-width: 250px; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.closing { animation: fadeOut 0.3s ease forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+        footer { background: var(--secondary); color: white; text-align: center; padding: 2rem; margin-top: 3rem; }
+    </style>
+</head>
+<body>
+    
+    <!-- HIDDEN STATE CHECKBOXES (Crucial for CSS Auth Logic) -->
+    <input type="checkbox" id="admin-state" style="display: none;">
+    <input type="checkbox" id="customer-state" style="display: none;">
+
+    <!-- NAVIGATION HEADER -->
+    <header>
+        <div class="nav-container">
+            <!-- Smart Logo Links based on Auth State -->
+            <a href="#home" class="logo default-logo">StoreTemplate</a>
+            <a href="#dashboard" class="logo customer-logo">StoreTemplate</a>
+            <a href="#admin-dashboard" class="logo admin-logo">StoreTemplate</a>
+            
+            <nav>
+                <ul>
+                    <!-- Dashboard (First for Logged-in Customers) -->
+                    <li class="logged-in-nav">
+                        <a href="#dashboard" style="color: var(--primary); font-weight: bold; background: white; border-radius: var(--radius); padding: 0.5rem 1rem;">Dashboard</a>
+                    </li>
+                    
+                    <!-- Public / Guest Links -->
+                    <li class="customer-hide"><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#products">Products</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    
+                    <!-- Direct Login Button for Guests -->
+                    <li class="guest-nav">
+                        <a href="#login" style="background: var(--primary); font-weight: bold; padding: 0.5rem 1.5rem;">Login</a>
+                    </li>
+                    
+                    <!-- Cart & Logout for Logged-In Customers -->
+                    <li class="logged-in-nav">
+                        <a href="#cart">Cart (<span id="cart-count">0</span>)</a>
+                    </li>
+                    <li class="logged-in-nav">
+                        <a href="javascript:void(0)" onclick="handleLogout()" style="color: #fca5a5;">Logout</a>
+                    </li>
+                    
+                    <!-- Admin Panel Dropdown -->
+                    <li class="admin-panel-nav">
+                        <a href="#admin-dashboard" style="color: #fbbf24;">Admin Panel ▾</a>
+                        <div class="dropdown">
+                            <a href="#admin-dashboard">Admin Dashboard</a>
+                            <a href="#manage-staff">Manage Staff</a>
+                            <a href="#manage-member">Manage Customers</a>
+                            <a href="#manage-category">Manage Categories</a>
+                            <a href="#manage-product">Manage Products</a>
+                            <a href="#manage-order">Manage Orders</a>
+                            <a href="#sales-report">Sales Report</a>
+                            <button class="logout-btn text-center" onclick="handleLogout()">Logout Admin</button>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <!-- ========================================== -->
+        <!-- PUBLIC / USER PAGES                        -->
+        <!-- ========================================== -->
+
+        <section id="about" class="page-section">
+            <h2>About Us</h2>
+            <p class="text-center">Meet the brilliant minds behind our project.</p>
+            <div class="grid-3 mt-2">
+                <div class="card text-center">
+                    <img src="image_d52fe4.png" alt="John Doe" class="card-img" style="border-radius: 50%; width: 150px; height: 150px; margin: 1.5rem auto 0; object-fit: cover; background: #94a3b8;" onerror="this.src='https://placehold.co/150x150/94a3b8/ffffff?text=Photo'">
+                    <div class="card-body">
+                        <h3>John Doe</h3>
+                        <p>Project Manager</p>
+                        <a href="mailto:john@example.com" class="btn btn-outline" style="width:100%">Contact</a>
+                    </div>
+                </div>
+                <div class="card text-center">
+                    <img src="image_d52fc2.png" alt="Jane Smith" class="card-img" style="border-radius: 50%; width: 150px; height: 150px; margin: 1.5rem auto 0; object-fit: cover; background: #94a3b8;" onerror="this.src='https://placehold.co/150x150/94a3b8/ffffff?text=Photo'">
+                    <div class="card-body">
+                        <h3>Jane Smith</h3>
+                        <p>Lead Developer</p>
+                        <a href="mailto:jane@example.com" class="btn btn-outline" style="width:100%">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="page-section">
+            <h2>Contact Us</h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Our Location</h3>
+                    <!-- Interactive Google Map -->
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127482.68417772658!2d101.61694931448003!3d3.13849652251147!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc362bfc083ceZ%3A0x44d9e6eb71d2b861!2sKuala%20Lumpur%2C%20Federal%20Territory%20of%20Kuala%20Lumpur%2C%20Malaysia!5e0!3m2!1sen!2smy!4v1717315123456!5m2!1sen!2smy" width="100%" height="350" style="border:0; border-radius: var(--radius); margin-bottom: 2rem; background: #e2e8f0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <p><strong>Email:</strong> support@storetemplate.com</p>
+                </div>
+                <div>
+                    <h3>Send us a message</h3>
+                    <form onsubmit="event.preventDefault(); showToast('Message sent successfully!');">
+                        <div class="form-group"><label>Name</label><input type="text" required></div>
+                        <div class="form-group"><label>Email</label><input type="email" required></div>
+                        <div class="form-group"><label>Message</label><textarea required></textarea></div>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Registration / Sign-Up Form -->
+        <section id="register" class="page-section">
+            <h2>Create an Account</h2>
+            <form style="max-width: 600px; margin: 0 auto;" onsubmit="handleRegister(event)">
+                <div class="grid-2">
+                    <div class="form-group"><label>First Name</label><input type="text" required></div>
+                    <div class="form-group"><label>Last Name</label><input type="text" required></div>
+                </div>
+                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="reg-pass" required style="padding-right: 85px;">
+                        <span onclick="togglePassword('reg-pass', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 0.9rem; font-weight: bold; user-select: none;">Show</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Sign Up</button>
+                <p class="text-center mt-2">Already have an account? <a href="#login">Login here</a></p>
+            </form>
+        </section>
+
+        <!-- 5. Unified Login Form -->
+        <section id="login" class="page-section">
+            <h2 class="text-center">Secure Sign In</h2>
+            <p class="text-center mb-1">Enter your credentials to access your account.</p>
+            <div style="max-width: 400px; margin: 0 auto; background: var(--bg-light); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border-color);">
+                <form onsubmit="handleUnifiedLogin(event)">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="login-email" required placeholder="customer@example.com (or admin@system.com)">
+                        <small style="color: var(--text-muted); display: block; margin-top: 0.5rem; line-height: 1.4;">
+                            <strong>Testing Defaults:</strong><br>
+                            Admin: admin@system.com / admin123<br>
+                            Customer: customer@example.com / password123
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="login-pass" required placeholder="••••••••" style="padding-right: 85px;">
+                            <span onclick="togglePassword('login-pass', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 0.9rem; font-weight: bold; user-select: none;">Show</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Sign In</button>
+                    <p class="text-center mt-2">Don't have an account? <a href="#register">Register</a></p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Dynamic Products List with Filter/Search -->
+        <section id="products" class="page-section">
+            <h2>Our Products & Services</h2>
+            <p>Check out our latest offerings.</p>
+            
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <input type="text" id="search-prod" placeholder="Search products by name..." style="flex-grow: 1; min-width: 200px;" oninput="renderProducts()">
+                <select id="filter-cat" onchange="renderProducts()" style="width: 200px;">
+                    <option value="">All Categories</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Office">Office</option>
+                </select>
+            </div>
+
+            <div id="products-grid" class="grid-3 mt-2">
+                <!-- Products injected by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Dynamic Product Detail Template -->
+        <section id="product-detail" class="page-section">
+            <a href="#products" class="btn btn-outline mb-1">&larr; Back to Products</a>
+            <div class="grid-2">
+                <div style="background: #cbd5e1; height: 400px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius); font-size: 4rem; color: var(--text-muted);">
+                    🛍️
+                </div>
+                <div>
+                    <h2 id="detail-name">Product Name</h2>
+                    <div id="detail-price" class="price" style="font-size: 2.5rem;">$0.00</div>
+                    <p>Status: <span style="color: var(--success); font-weight: bold;">In Stock</span></p>
+
+                    <div class="css-tabs">
+                        <input type="radio" name="prod-tabs-d" id="tab-desc-d" class="tab-radio" checked>
+                        <label for="tab-desc-d" class="tab-label">Description</label>
+                        <div class="tab-content" id="detail-desc">
+                            <p>Loading description...</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="max-width: 100px;">
+                        <label for="detail-qty">Quantity:</label>
+                        <input type="number" id="detail-qty" value="1" min="1">
+                    </div>
+                    <button id="detail-add-btn" class="btn" style="width: 100%; font-size: 1.2rem;">Add to Shopping Cart</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- CUSTOMER PAGES                             -->
+        <!-- ========================================== -->
+
+        <!-- 6. Unified Customer Dashboard -->
+        <section id="dashboard" class="page-section user-protected-page" style="padding: 0; background: transparent; box-shadow: none;">
+            <!-- HOME CONTENT (TOP) -->
+            <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: white; font-size: 3rem;">Welcome back!</h1>
+                <p style="color: #e2e8f0; font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem;">This is your personal command center and homepage.</p>
+                <a href="#products" class="btn" style="background: white; color: var(--primary); font-weight: bold;">View Catalog</a>
+            </div>
+
+            <div class="grid-3 text-center mb-1">
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="font-size: 2rem;">🚀</h3>
+                    <h3>Fast Delivery</h3>
+                    <p>Free shipping on orders over $50.</p>
+                </div>
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="font-size: 2rem;">🛡️</h3>
+                    <h3>Secure Payment</h3>
+                    <p>100% secure payment processing.</p>
+                </div>
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="font-size: 2rem;">🎧</h3>
+                    <h3>24/7 Support</h3>
+                    <p>Dedicated support anytime you need.</p>
+                </div>
+            </div>
+
+            <!-- DASHBOARD CONTENT (BOTTOM) -->
+            <div style="background: var(--bg-white); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 2rem;">
+                <h2>Your Account Overview</h2>
+                <p>Track your activity and rewards.</p>
+                <div class="grid-4 mb-1 mt-2">
+                    <div class="stat-card"><p>Active Orders</p><h3>2</h3></div>
+                    <div class="stat-card"><p>Reward Points</p><h3>120</h3></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cart" class="page-section user-protected-page">
+            <h2>Your Shopping Cart</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product Details</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-items-container">
+                        <tr><td colspan="5" class="text-center">Loading your secure cart...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: right; margin-top: 2rem; background: var(--bg-light); padding: 2rem; border-radius: var(--radius); display: inline-block; float: right; min-width: 300px;">
+                <p style="display: flex; justify-content: space-between;">Subtotal: <span id="cart-subtotal">$0.00</span></p>
+                <p style="display: flex; justify-content: space-between;">Tax (6%): <span id="cart-tax">$0.00</span></p>
+                <h3 style="display: flex; justify-content: space-between; border-top: 2px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">Total: <span id="cart-total">$0.00</span></h3>
+                <a href="#checkout" class="btn mt-2" style="font-size: 1.2rem; width: 100%;">Proceed to Checkout</a>
+            </div>
+            <div style="clear: both;"></div>
+        </section>
+
+        <section id="checkout" class="page-section user-protected-page">
+            <h2>Checkout & Payment</h2>
+            <form id="checkout-form" onsubmit="event.preventDefault(); showToast('Payment Successful! Thank you for your order.'); window.location.hash='#dashboard'; clearCart();">
+                <div class="grid-2">
+                    <div>
+                        <h3>Billing Address</h3>
+                        <div class="form-group"><label>Full Name</label><input type="text" required></div>
+                        <div class="form-group"><label>Address</label><textarea required style="min-height: 80px;"></textarea></div>
+                    </div>
+                    <div style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--radius);">
+                        <h3>Payment Details</h3>
+                        <div class="form-group"><label>Credit Card Number</label><input type="text" placeholder="XXXX-XXXX-XXXX-XXXX" required></div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Expiry Date</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <select required style="width: 50%;">
+                                        <option value="" disabled selected>MM</option>
+                                        <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option>
+                                        <option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                                    </select>
+                                    <select required style="width: 50%;">
+                                        <option value="" disabled selected>YYYY</option>
+                                        <option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option><option value="2029">2029</option><option value="2030">2030</option>
+                                        <option value="2031">2031</option><option value="2032">2032</option><option value="2033">2033</option><option value="2034">2034</option><option value="2035">2035</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group"><label>CVV / CVC</label><input type="text" placeholder="123" pattern="[0-9]{3,4}" title="3 or 4 digit code" required></div>
+                        </div>
+                        <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--border-color);">
+                        <h3 style="display: flex; justify-content: space-between;">Total to Pay: <span id="checkout-total-display">$0.00</span></h3>
+                        <button type="submit" class="btn" style="width: 100%; margin-top: 1rem; font-size: 1.2rem;">Pay Now</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section id="comments" class="page-section">
+            <h2>Leave a Review</h2>
+            <div style="max-width: 600px; background: var(--bg-light); padding: 2rem; border-radius: var(--radius); margin: 0 auto;">
+                <form onsubmit="event.preventDefault(); showToast('Review submitted!'); window.location.hash='#products';">
+                    <div class="form-group">
+                        <label>Review Title</label>
+                        <input type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Detailed Comments</label>
+                        <textarea required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Submit Review</button>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- ADMINISTRATOR PAGES                        -->
+        <!-- ========================================== -->
+
+        <section id="admin-dashboard" class="page-section admin-page">
+            <h2>Admin Control Panel</h2>
+            <div class="grid-4 mb-1">
+                <div class="stat-card" style="border-left-color: var(--success);"><p>Sales (Today)</p><h3 style="color: var(--success);">$1,245.00</h3></div>
+                <div class="stat-card" style="border-left-color: var(--primary);"><p>Active Orders</p><h3 style="color: var(--primary);">14</h3></div>
+            </div>
+            <div class="grid-2">
+                <div>
+                    <h3>Quick Actions</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <a href="#manage-product" class="btn btn-outline">Add New Product</a>
+                        <a href="#sales-report" class="btn btn-outline">Generate Sales Report</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="manage-staff" class="page-section admin-page"><h2>Manage Staff</h2><p>Staff Management System goes here.</p></section>
+        <section id="manage-member" class="page-section admin-page"><h2>Manage Customers</h2><p>Customer Database goes here.</p></section>
+        <section id="manage-category" class="page-section admin-page"><h2>Manage Categories</h2><p>Category configuration goes here.</p></section>
+        <section id="manage-order" class="page-section admin-page"><h2>Manage Orders</h2><p>Order processing pipeline goes here.</p></section>
+
+        <section id="manage-product" class="page-section admin-page">
+            <h2>Manage Products & Services</h2>
+            
+            <div style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                <h3>Add New Product</h3>
+                <form onsubmit="adminAddProduct(event)" class="grid-4" style="align-items: end;">
+                    <div class="form-group mb-0"><label>Product Name</label><input type="text" id="new-prod-name" required></div>
+                    <div class="form-group mb-0"><label>Price ($)</label><input type="number" step="0.01" id="new-prod-price" required></div>
+                    <div class="form-group mb-0">
+                        <label>Category</label>
+                        <select id="new-prod-cat" required>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Office">Office</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Save</button>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr><th>Product Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="admin-products-tbody">
+                        <!-- Admin products injected here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="sales-report" class="page-section admin-page">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Sales Report</h2>
+                <button class="btn" onclick="window.print()">🖨️ Print Report</button>
+            </div>
+            <!-- Chart.js Canvas -->
+            <div style="background: var(--bg-white); padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <canvas id="salesChart" height="100"></canvas>
+            </div>
+        </section>
+
+        <!-- Default Home View -->
+        <section id="home" class="page-section" style="padding: 0; background: transparent; box-shadow: none;">
+            <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: white; font-size: 3rem;">Welcome to StoreTemplate</h1>
+                <p style="color: #e2e8f0; font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem;">Your premium E-Commerce destination.</p>
+                <a href="#products" class="btn" style="background: white; color: var(--primary); font-weight: bold;">View Catalog</a>
+            </div>
+            <div class="grid-3 text-center">
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="font-size: 2rem;">🚀</h3>
+                    <h3>Fast Delivery</h3>
+                    <p>Free shipping on orders over $50.</p>
+                </div>
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="font-size: 2rem;">🛡️</h3>
+                    <h3>Secure Payment</h3>
+                    <p>100% secure payment processing.</p>
+                </div>
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="font-size: 2rem;">🎧</h3>
+                    <h3>24/7 Support</h3>
+                    <p>Dedicated support anytime you need.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- WELCOME POPUP -->
+        <div id="welcome-modal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 600px; text-align: center;">
+                <a href="#home" class="modal-close" title="Close" onclick="closeModal(event)">&times;</a>
+                <h2 style="color: var(--primary); margin-top: 0;">Welcome to StoreTemplate! 🚀</h2>
+                <p>Feel free to explore our products.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                    <a href="#login" class="btn" onclick="closeModal(event)">Login to Account</a>
+                    <a href="#products" class="btn btn-outline" onclick="closeModal(event)">Start Shopping</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 StoreTemplate. All rights reserved.</p>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- 0. FIREBASE CLOUD SETUP (With Bomb-Proof Fallback) ---
+        let cloudUsers = [];
+        let currentUser = null;
+        let db = null;
+        let appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        try {
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            db = getFirestore(app);
+
+            const initCloudAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            };
+            initCloudAuth();
+
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'storeUsers'), async (snap) => {
+                        cloudUsers = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    });
+                }
+            });
+        } catch(e) {
+            console.warn("Running in local mode. Database synced offline.");
+        }
+
+        // --- TOAST NOTIFICATION SYSTEM ---
+        window.showToast = (message, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span> <strong style="cursor:pointer" onclick="this.parentElement.remove()">✕</strong>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('closing');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        // --- 1. LOCAL DATA (Products & Cart) ---
+        let localProducts = JSON.parse(localStorage.getItem('storeProducts')) || [];
+        let localCart = JSON.parse(localStorage.getItem('storeCart')) || [];
+        let isInitialized = localStorage.getItem('storeInitialized');
+
+        if (!isInitialized || localProducts.length === 0) {
+            localProducts = [
+                { id: 'p1', name: 'Premium Wireless Headphones', price: 199.99, stock: 24, category: 'Electronics', desc: 'High-quality sound with noise cancellation technology.' },
+                { id: 'p2', name: 'Mechanical Keyboard PRO', price: 89.99, stock: 10, category: 'Electronics', desc: 'RGB backlit mechanical keyboard for gamers and typists.' },
+                { id: 'p3', name: 'Ergonomic Office Chair', price: 250.00, stock: 5, category: 'Office', desc: 'Comfortable chair with lumbar support for long hours.' }
+            ];
+            localStorage.setItem('storeProducts', JSON.stringify(localProducts));
+            localStorage.setItem('storeInitialized', 'true');
+        }
+
+        // --- 2. AUTHENTICATION LOGIC ---
+        window.checkVisualAuthState = () => {
+            const adminState = document.getElementById('admin-state');
+            const customerState = document.getElementById('customer-state');
+            if (adminState) adminState.checked = localStorage.getItem('isAdmin') === 'true';
+            if (customerState) customerState.checked = localStorage.getItem('isCustomer') === 'true';
+        };
+
+        window.togglePassword = (inputId, spanEl) => {
+            const input = document.getElementById(inputId);
+            if(input.type === 'password') {
+                input.type = 'text';
+                spanEl.innerText = 'Hide';
+            } else {
+                input.type = 'password';
+                spanEl.innerText = 'Show';
+            }
+        };
+
+        window.handleRegister = async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('reg-email').value.toLowerCase();
+            const password = document.getElementById('reg-pass').value;
+
+            try {
+                if (currentUser && db) {
+                    if (cloudUsers.find(u => u.email === email)) {
+                        return window.showToast('Email already exists!', 'error');
+                    }
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'storeUsers'), { email: email, password: password, role: 'customer' });
+                }
+            } catch(e) { } 
+
+            window.showToast('Registration successful! You can now log in.');
+            window.location.hash = '#login';
+            event.target.reset();
+        };
+
+        window.handleUnifiedLogin = (event) => {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.toLowerCase();
+            const pass = document.getElementById('login-pass').value;
+            
+            let isValidAdmin = (email === 'admin@system.com' && pass === 'admin123');
+            let isValidCustomer = (email === 'customer@example.com' && pass === 'password123');
+
+            const user = cloudUsers.find(u => u.email === email && u.password === pass);
+            if (user) {
+                if(user.role === 'admin') isValidAdmin = true;
+                else isValidCustomer = true;
+            }
+
+            if (isValidAdmin) {
+                localStorage.setItem('isAdmin', 'true'); localStorage.setItem('isCustomer', 'false');
+                window.location.hash = '#admin-dashboard';
+                window.showToast('Welcome back, Administrator!');
+            } else if (isValidCustomer) {
+                localStorage.setItem('isAdmin', 'false'); localStorage.setItem('isCustomer', 'true');
+                window.location.hash = '#dashboard';
+                window.showToast('Welcome back to your dashboard!');
+            } else {
+                window.showToast('Invalid email or password.', 'error');
+                return;
+            }
+            
+            document.getElementById('login-pass').value = '';
+            window.checkVisualAuthState();
+        };
+
+        window.handleLogout = () => {
+            localStorage.setItem('isAdmin', 'false');
+            localStorage.setItem('isCustomer', 'false');
+            window.checkVisualAuthState();
+            window.location.hash = '#home';
+            window.showToast('You have securely logged out.');
+            
+            const loginPass = document.getElementById('login-pass');
+            if(loginPass) { loginPass.type = 'password'; loginPass.nextElementSibling.innerText = 'Show'; }
+            const regPass = document.getElementById('reg-pass');
+            if(regPass) { regPass.type = 'password'; regPass.nextElementSibling.innerText = 'Show'; }
+        };
+
+        // --- 3. CART UI LOGIC ---
+        window.saveCart = () => localStorage.setItem('storeCart', JSON.stringify(localCart));
+
+        window.addToCart = (id, name, price, specificQty) => {
+            if (localStorage.getItem('isCustomer') !== 'true' && localStorage.getItem('isAdmin') !== 'true') {
+                window.showToast("Please login first to add items.", "error");
+                window.location.hash = '#login';
+                return;
+            }
+            
+            let qty = 1;
+            if (specificQty !== undefined) {
+                qty = parseInt(specificQty);
+            } else {
+                const qtyInput = document.getElementById(`qty-${id}`);
+                qty = qtyInput ? parseInt(qtyInput.value) : 1;
+            }
+
+            if (isNaN(qty) || qty < 1) {
+                window.showToast("Invalid quantity.", "error"); return;
+            }
+
+            const existing = localCart.find(i => i.id === id);
+            if (existing) existing.quantity += qty;
+            else localCart.push({ id, name, price, quantity: qty });
+            
+            window.saveCart();
+            window.showToast(`${qty}x item added to your cart!`);
+            window.renderCart();
+            window.location.hash = '#cart';
+        };
+
+        window.updateCartQuantity = (id, newQty) => {
+            const item = localCart.find(i => i.id === id);
+            const parsedQty = parseInt(newQty);
+            if (item) {
+                if (!isNaN(parsedQty) && parsedQty >= 1) item.quantity = parsedQty;
+                window.saveCart();
+                window.renderCart(); 
+            }
+        };
+
+        window.removeFromCart = (id) => {
+            const index = localCart.findIndex(i => i.id === id);
+            if (index > -1) {
+                localCart.splice(index, 1);
+                window.saveCart();
+                window.renderCart();
+                window.showToast('Item removed from cart.');
+            }
+        };
+
+        window.clearCart = () => {
+            localCart = [];
+            window.saveCart();
+            window.renderCart();
+        };
+
+        window.renderCart = () => {
+            const container = document.getElementById('cart-items-container');
+            const cartCount = document.getElementById('cart-count');
+            if (!container) return;
+
+            let html = '';
+            let subtotal = 0;
+            let totalItems = 0;
+
+            if (localCart.length === 0) {
+                html = `<tr><td colspan="5" class="text-center" style="padding: 2rem;">Your cart is empty. <br><a href="#products" class="btn mt-2">Go Shopping</a></td></tr>`;
+            } else {
+                localCart.forEach((item) => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    totalItems += item.quantity;
+                    html += `
+                        <tr>
+                            <td><strong>${item.name.replace(/</g, "&lt;")}</strong></td>
+                            <td><input type="number" value="${item.quantity}" min="1" style="width: 70px;" onchange="updateCartQuantity('${item.id}', this.value)"></td>
+                            <td>$${item.price.toFixed(2)}</td>
+                            <td>$${itemTotal.toFixed(2)}</td>
+                            <td><button class="btn btn-danger" style="padding: 0.25rem 0.5rem;" onclick="removeFromCart('${item.id}')">Remove</button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+            if(cartCount) cartCount.innerText = totalItems;
+            
+            const tax = subtotal * 0.06;
+            const finalTotal = subtotal + tax;
+
+            if(document.getElementById('cart-subtotal')) document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+            if(document.getElementById('cart-tax')) document.getElementById('cart-tax').innerText = `$${tax.toFixed(2)}`;
+            if(document.getElementById('cart-total')) document.getElementById('cart-total').innerText = `$${finalTotal.toFixed(2)}`;
+            if(document.getElementById('checkout-total-display')) document.getElementById('checkout-total-display').innerText = `$${finalTotal.toFixed(2)}`;
+        };
+        
+        // --- 4. DYNAMIC PRODUCTS & DETAILS ---
+        window.renderProducts = () => {
+            const container = document.getElementById('products-grid');
+            if (!container) return;
+            
+            const searchTerm = (document.getElementById('search-prod')?.value || '').toLowerCase();
+            const filterCat = document.getElementById('filter-cat')?.value || '';
+            
+            let filteredProducts = localProducts.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchTerm);
+                const matchesCat = filterCat === '' || p.category === filterCat;
+                return matchesSearch && matchesCat;
+            });
+            
+            if (filteredProducts.length === 0) {
+                container.innerHTML = '<p class="text-center" style="grid-column: 1 / -1; padding: 2rem;">No products found matching your search.</p>';
+                return;
+            }
+
+            container.innerHTML = filteredProducts.map(p => `
+                <div class="card">
+                    <div class="card-img" style="font-size:3rem;">🛍️</div>
+                    <div class="card-body">
+                        <h3>${p.name.replace(/</g, "&lt;")}</h3>
+                        <p>${p.desc.replace(/</g, "&lt;")}</p>
+                        <div class="price">$${p.price.toFixed(2)}</div>
+                        <button onclick="viewProduct('${p.id}')" class="btn text-center mt-2" style="width:100%">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+        
+        window.viewProduct = (id) => {
+            const p = localProducts.find(x => x.id === id);
+            if(!p) return;
+            
+            document.getElementById('detail-name').innerText = p.name;
+            document.getElementById('detail-price').innerText = '$' + p.price.toFixed(2);
+            document.getElementById('detail-desc').innerHTML = '<p>' + p.desc.replace(/</g, "&lt;") + '</p><p class="mt-2"><strong>Category:</strong> ' + (p.category || 'General') + '</p>';
+            
+            // Set up button click handler
+            document.getElementById('detail-add-btn').onclick = () => {
+                const qty = document.getElementById('detail-qty').value;
+                addToCart(p.id, p.name, p.price, qty);
+            };
+            
+            document.getElementById('detail-qty').value = 1;
+            window.location.hash = '#product-detail';
+        };
+
+        window.renderAdminProducts = () => {
+            const tbody = document.getElementById('admin-products-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = localProducts.map(p => `
+                <tr>
+                    <td>${p.name.replace(/</g, "&lt;")}</td>
+                    <td>${p.category || 'General'}</td>
+                    <td>$${p.price.toFixed(2)}</td>
+                    <td>${p.stock || 0}</td>
+                    <td><button class="btn btn-danger" style="padding: 0.2rem 0.5rem;" onclick="deleteProduct('${p.id}')">Delete</button></td>
+                </tr>
+            `).join('');
+        };
+        
+        window.adminAddProduct = (event) => {
+            event.preventDefault();
+            const name = document.getElementById('new-prod-name').value;
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const category = document.getElementById('new-prod-cat').value;
+            
+            const newProd = { id: 'p' + Date.now(), name, price, category, stock: 10, desc: 'A new product added by admin.' };
+            localProducts.push(newProd);
+            localStorage.setItem('storeProducts', JSON.stringify(localProducts));
+            
+            window.renderProducts();
+            window.renderAdminProducts();
+            event.target.reset();
+            window.showToast('Product added successfully!');
+        };
+        
+        window.deleteProduct = (id) => {
+            if(confirm("Are you sure you want to delete this product?")) {
+                localProducts = localProducts.filter(p => p.id !== id);
+                localStorage.setItem('storeProducts', JSON.stringify(localProducts));
+                window.removeFromCart(id);
+                window.renderProducts();
+                window.renderAdminProducts();
+                window.showToast('Product deleted.', 'error');
+            }
+        };
+
+        // --- 5. CHART JS LOGIC ---
+        let salesChartInstance = null;
+        window.initChart = () => {
+            const ctx = document.getElementById('salesChart');
+            if(!ctx) return;
+            if(salesChartInstance) salesChartInstance.destroy();
+            
+            salesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: ['January', 'February', 'March', 'April', 'May'], datasets: [{ label: 'Revenue ($)', data: [5400, 7100, 6200, 11500, 9800], backgroundColor: '#3b82f6', borderRadius: 4 }] },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        };
+
+        window.closeModal = (e) => {
+            if(e) e.preventDefault();
+            window.location.hash = '#home';
+        };
+
+        // Boot Application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.checkVisualAuthState();
+            window.renderProducts();
+            window.renderAdminProducts();
+            window.renderCart();
+            
+            if (!window.location.hash || window.location.hash === '' || window.location.hash === '#home') {
+                if (!sessionStorage.getItem('welcomeShown')) {
+                    setTimeout(() => window.location.hash = '#welcome-modal', 400);
+                    sessionStorage.setItem('welcomeShown', 'true');
+                }
+            } else if (window.location.hash === '#sales-report') {
+                setTimeout(() => window.initChart(), 100);
+            }
+        });
+
+        window.addEventListener('hashchange', () => {
+            if(!window.location.hash.includes('modal')) window.scrollTo({ top: 0, behavior: 'smooth' });
+            if(window.location.hash === '#sales-report') setTimeout(() => window.initChart(), 100);
+        });
+
+    </script>
+</body>
+</html>
