@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>GeckoStore - Home</title>
+    <title>GeckoStore - Products</title>
     <link rel="stylesheet" href="style.css">
     <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
 </head>
@@ -46,28 +46,14 @@
         </div>
     </header>
     <main class="main-content">
-        <section class="page-section" style="padding: 0; box-shadow: none; background: transparent;">
-            <div
-                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: white;">Welcome to GeckoStore</h1>
-                <p style="color: #e2e8f0; max-width: 600px; margin: 0 auto 2rem;">Premium geckos, custom enclosures, and
-                    nutritious food.</p>
-                <a href="products.html" class="btn" style="background: white; color: var(--primary);">View Catalog</a>
+        <section class="page-section">
+            <h2>Our Products & Services</h2>
+            <div class="search-filter-bar">
+                <input type="text" id="search-prod" class="modern-input" placeholder="Search..."
+                    oninput="window.renderProducts()">
+                <select id="filter-cat" class="modern-select" onchange="window.renderProducts()"></select>
             </div>
-            <div class="grid-3 text-center">
-                <div class="card" style="padding: 2rem;">
-                    <h3>Fast Delivery</h3>
-                    <p>Free shipping on orders over RM50.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>Secure Payment</h3>
-                    <p>100% secure payment processing.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>24/7 Support</h3>
-                    <p>Dedicated support anytime you need.</p>
-                </div>
-            </div>
+            <div id="products-grid" class="grid-3 mt-2"></div>
         </section>
     </main>
     <div id="toast-container" class="toast-container"></div>

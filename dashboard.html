@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>GeckoStore - Home</title>
+    <title>GeckoStore - Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
 </head>
@@ -46,28 +46,28 @@
         </div>
     </header>
     <main class="main-content">
-        <section class="page-section" style="padding: 0; box-shadow: none; background: transparent;">
-            <div
-                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: white;">Welcome to GeckoStore</h1>
-                <p style="color: #e2e8f0; max-width: 600px; margin: 0 auto 2rem;">Premium geckos, custom enclosures, and
-                    nutritious food.</p>
-                <a href="products.html" class="btn" style="background: white; color: var(--primary);">View Catalog</a>
+        <section class="page-section">
+            <h2>Welcome to your Dashboard</h2>
+            <p>Track your orders below.</p>
+            <h3 style="margin-top: 2rem;">Recent Orders</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customer-orders-tbody">
+                        <tr>
+                            <td colspan="4" class="text-center">Loading orders...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="grid-3 text-center">
-                <div class="card" style="padding: 2rem;">
-                    <h3>Fast Delivery</h3>
-                    <p>Free shipping on orders over RM50.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>Secure Payment</h3>
-                    <p>100% secure payment processing.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>24/7 Support</h3>
-                    <p>Dedicated support anytime you need.</p>
-                </div>
-            </div>
+            <a href="products.html" class="btn mt-2">Start Shopping</a>
         </section>
     </main>
     <div id="toast-container" class="toast-container"></div>

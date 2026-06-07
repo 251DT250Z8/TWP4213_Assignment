@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>GeckoStore - Home</title>
+    <title>GeckoStore - Sales Report</title>
     <link rel="stylesheet" href="style.css">
     <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
 </head>
@@ -46,28 +46,30 @@
         </div>
     </header>
     <main class="main-content">
-        <section class="page-section" style="padding: 0; box-shadow: none; background: transparent;">
-            <div
-                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: white;">Welcome to GeckoStore</h1>
-                <p style="color: #e2e8f0; max-width: 600px; margin: 0 auto 2rem;">Premium geckos, custom enclosures, and
-                    nutritious food.</p>
-                <a href="products.html" class="btn" style="background: white; color: var(--primary);">View Catalog</a>
+        <section class="page-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Sales Report</h2>
+                <div style="display: flex; gap: 1rem;">
+                    <select id="report-month" class="modern-select" onchange="window.updateChart()"
+                        style="padding: 0.5rem; border-radius: var(--radius);">
+                        <option value="all">All Months</option>
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
+                    <button type="button" class="btn" onclick="window.print()">Print Report</button>
+                </div>
             </div>
-            <div class="grid-3 text-center">
-                <div class="card" style="padding: 2rem;">
-                    <h3>Fast Delivery</h3>
-                    <p>Free shipping on orders over RM50.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>Secure Payment</h3>
-                    <p>100% secure payment processing.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>24/7 Support</h3>
-                    <p>Dedicated support anytime you need.</p>
-                </div>
-            </div>
+            <div style="height:400px; width:100%"><canvas id="salesChart"></canvas></div>
         </section>
     </main>
     <div id="toast-container" class="toast-container"></div>

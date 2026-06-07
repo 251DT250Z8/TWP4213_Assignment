@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>GeckoStore - Home</title>
+    <title>GeckoStore - Manage Category</title>
     <link rel="stylesheet" href="style.css">
     <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
 </head>
@@ -46,26 +46,29 @@
         </div>
     </header>
     <main class="main-content">
-        <section class="page-section" style="padding: 0; box-shadow: none; background: transparent;">
-            <div
-                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: white;">Welcome to GeckoStore</h1>
-                <p style="color: #e2e8f0; max-width: 600px; margin: 0 auto 2rem;">Premium geckos, custom enclosures, and
-                    nutritious food.</p>
-                <a href="products.html" class="btn" style="background: white; color: var(--primary);">View Catalog</a>
-            </div>
-            <div class="grid-3 text-center">
-                <div class="card" style="padding: 2rem;">
-                    <h3>Fast Delivery</h3>
-                    <p>Free shipping on orders over RM50.</p>
+        <section class="page-section">
+            <h2>Manage Categories</h2>
+            <div class="grid-2">
+                <div>
+                    <h3>Add New</h3>
+                    <form onsubmit="window.adminAddCategory(event)">
+                        <div class="form-group"><label>Category Name</label><input type="text" id="new-cat-name"
+                                required></div>
+                        <button type="submit" class="btn">Add</button>
+                    </form>
                 </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>Secure Payment</h3>
-                    <p>100% secure payment processing.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>24/7 Support</h3>
-                    <p>Dedicated support anytime you need.</p>
+                <div>
+                    <h3>List</h3>
+                    <table class="table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Count</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-category-tbody"></tbody>
+                    </table>
                 </div>
             </div>
         </section>

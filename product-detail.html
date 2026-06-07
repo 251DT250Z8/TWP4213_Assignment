@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>GeckoStore - Home</title>
+    <title>GeckoStore - Product Detail</title>
     <link rel="stylesheet" href="style.css">
     <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
 </head>
@@ -46,26 +46,23 @@
         </div>
     </header>
     <main class="main-content">
-        <section class="page-section" style="padding: 0; box-shadow: none; background: transparent;">
-            <div
-                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: white;">Welcome to GeckoStore</h1>
-                <p style="color: #e2e8f0; max-width: 600px; margin: 0 auto 2rem;">Premium geckos, custom enclosures, and
-                    nutritious food.</p>
-                <a href="products.html" class="btn" style="background: white; color: var(--primary);">View Catalog</a>
-            </div>
-            <div class="grid-3 text-center">
-                <div class="card" style="padding: 2rem;">
-                    <h3>Fast Delivery</h3>
-                    <p>Free shipping on orders over RM50.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>Secure Payment</h3>
-                    <p>100% secure payment processing.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>24/7 Support</h3>
-                    <p>Dedicated support anytime you need.</p>
+        <section class="page-section">
+            <a href="products.html" class="btn btn-outline mb-1">&larr; Back to Products</a>
+            <div class="grid-2">
+                <img id="detail-image" src="" alt="Product Image"
+                    style="width: 100%; height: 300px; object-fit: cover; border-radius: var(--radius); background: #cbd5e1;">
+                <div>
+                    <h2 id="detail-name">Loading...</h2>
+                    <div id="detail-price" class="price">RM0.00</div>
+                    <p>Stock: <span id="detail-stock-count">0</span> available</p>
+                    <div id="detail-desc" style="margin: 1rem 0;"></div>
+                    <div class="qty-stepper" style="margin-bottom: 1rem;">
+                        <button type="button" class="qty-btn" onclick="window.decreaseQty('detail-qty')">−</button>
+                        <input type="number" id="detail-qty" value="1" readonly>
+                        <button type="button" class="qty-btn" onclick="window.increaseQty('detail-qty', 100)">+</button>
+                    </div>
+                    <button id="detail-add-btn" class="btn">Add to Cart</button>
+                    <a href="comments.html" class="btn btn-outline mt-2">View Comments</a>
                 </div>
             </div>
         </section>

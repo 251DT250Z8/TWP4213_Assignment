@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>GeckoStore - Home</title>
+    <title>GeckoStore - Register</title>
     <link rel="stylesheet" href="style.css">
     <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
 </head>
@@ -46,28 +46,24 @@
         </div>
     </header>
     <main class="main-content">
-        <section class="page-section" style="padding: 0; box-shadow: none; background: transparent;">
-            <div
-                style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 4rem 2rem; border-radius: var(--radius); text-align: center; margin-bottom: 2rem;">
-                <h1 style="color: white;">Welcome to GeckoStore</h1>
-                <p style="color: #e2e8f0; max-width: 600px; margin: 0 auto 2rem;">Premium geckos, custom enclosures, and
-                    nutritious food.</p>
-                <a href="products.html" class="btn" style="background: white; color: var(--primary);">View Catalog</a>
-            </div>
-            <div class="grid-3 text-center">
-                <div class="card" style="padding: 2rem;">
-                    <h3>Fast Delivery</h3>
-                    <p>Free shipping on orders over RM50.</p>
+        <section class="page-section">
+            <h2>Create an Account</h2>
+            <form style="max-width: 600px; margin: 0 auto;" onsubmit="window.handleRegister(event)">
+                <div class="form-group"><label>First Name</label><input type="text" id="reg-fname" required></div>
+                <div class="form-group"><label>Last Name <span
+                            style="color: var(--text-muted); font-size: 0.8rem;">(Optional)</span></label><input
+                        type="text" id="reg-lname"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="reg-pass" required style="padding-right: 85px;">
+                        <span onclick="window.togglePassword('reg-pass', this)"
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 0.9rem; font-weight: bold; user-select: none;">Show</span>
+                    </div>
                 </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>Secure Payment</h3>
-                    <p>100% secure payment processing.</p>
-                </div>
-                <div class="card" style="padding: 2rem;">
-                    <h3>24/7 Support</h3>
-                    <p>Dedicated support anytime you need.</p>
-                </div>
-            </div>
+                <button type="submit" class="btn" style="width: 100%;">Sign Up</button>
+            </form>
         </section>
     </main>
     <div id="toast-container" class="toast-container"></div>
