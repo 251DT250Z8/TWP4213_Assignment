@@ -21,18 +21,18 @@ const seedLocalDatabase = () => {
         { id: 'c3', name: 'Food', desc: 'Live insects and formulated powdered diets.' }
     ];
     localProducts = [
-        { id: 'p1', name: 'Leopard Gecko (Tangerine Morph)', price: 59.99, stock: 12, category: 'Geckos', desc: 'A healthy, captive-bred Leopard Gecko. Perfect for beginners.', image: 'img/Leopard_Gecko.jpeg' },
-        { id: 'p2', name: 'Crested Gecko (Harlequin)', price: 89.99, stock: 5, category: 'Geckos', desc: 'Beautiful arboreal gecko with striking patterns.', image: 'img/Crested_Gecko.jpeg' },
-        { id: 'p3', name: 'Gargoyle Gecko (Striped)', price: 119.99, stock: 3, category: 'Geckos', desc: 'Hardy and stunning striped gecko.', image: 'img/Gargoyle_Gecko.jpeg' },
-        { id: 'p4', name: 'African Fat-Tailed Gecko', price: 79.99, stock: 6, category: 'Geckos', desc: 'Docile and friendly terrestrial gecko.', image: 'img/African_Fat_Tailed_Gecko.jpeg' },
-        { id: 'p5', name: 'Premium Glass Terrarium', price: 129.99, stock: 8, category: 'Enclosures', desc: 'Spacious 75-liter front-opening glass terrarium.', image: 'img/Premium_Glass_Terrarium.jpeg' },
-        { id: 'p6', name: 'Tall Arboreal Enclosure', price: 149.99, stock: 4, category: 'Enclosures', desc: 'Perfectly sized for climbing species.', image: 'img/Tall_Arboreal_Enclosure.jpeg' },
-        { id: 'p7', name: 'Digital Thermometer & Hygrometer', price: 15.99, stock: 45, category: 'Enclosures', desc: 'Accurately monitor temperature and humidity.', image: 'img/Digital_Thermometer_and_Hygrometer.jpeg' },
-        { id: 'p8', name: 'Natural Cork Bark Tubes', price: 12.50, stock: 35, category: 'Enclosures', desc: 'Provides a secure hiding spot.', image: 'img/Natural_Cork_Bark_Tubes.jpeg' },
-        { id: 'p9', name: 'Live Mealworms (500-Count)', price: 14.99, stock: 50, category: 'Food', desc: 'Nutritious live mealworms.', image: 'img/Live_Mealworms.jpeg' },
-        { id: 'p10', name: 'Live Dubia Roaches (200-Count)', price: 29.99, stock: 15, category: 'Food', desc: 'High-protein, low-chitin feeder insects.', image: 'img/Live_Dubia_Roaches.jpeg' },
-        { id: 'p11', name: 'Crested Gecko Diet (Watermelon)', price: 22.99, stock: 30, category: 'Food', desc: 'Complete meal replacement powder.', image: 'img/Crested_Gecko_Diet.jpeg' },
-        { id: 'p12', name: 'Calcium + D3 Supplement', price: 9.99, stock: 100, category: 'Food', desc: 'Essential vitamin powder.', image: 'img/Calcium_and_D3_Supplement.jpeg' }
+        { id: 'p1', name: 'Leopard Gecko (Tangerine Morph)', price: 200, stock: 12, category: 'Geckos', desc: 'A healthy, captive-bred Leopard Gecko. Perfect for beginners.', image: 'img/Leopard_Gecko.jpeg' },
+        { id: 'p2', name: 'Crested Gecko (Harlequin)', price: 160, stock: 5, category: 'Geckos', desc: 'Beautiful arboreal gecko with striking patterns.', image: 'img/Crested_Gecko.jpeg' },
+        { id: 'p3', name: 'Gargoyle Gecko (Striped)', price: 700, stock: 3, category: 'Geckos', desc: 'Hardy and stunning striped gecko.', image: 'img/Gargoyle_Gecko.jpeg' },
+        { id: 'p4', name: 'African Fat-Tailed Gecko', price: 300, stock: 6, category: 'Geckos', desc: 'Docile and friendly terrestrial gecko.', image: 'img/African_Fat_Tailed_Gecko.jpeg' },
+        { id: 'p5', name: 'Premium Glass Terrarium', price: 150, stock: 8, category: 'Enclosures', desc: 'Spacious 75-liter front-opening glass terrarium.', image: 'img/Premium_Glass_Terrarium.jpeg' },
+        { id: 'p6', name: 'Tall Arboreal Enclosure', price: 120, stock: 4, category: 'Enclosures', desc: 'Perfectly sized for climbing species.', image: 'img/Tall_Arboreal_Enclosure.jpeg' },
+        { id: 'p7', name: 'Digital Thermometer & Hygrometer', price: 58.88, stock: 45, category: 'Enclosures', desc: 'Accurately monitor temperature and humidity.', image: 'img/Digital_Thermometer_and_Hygrometer.jpeg' },
+        { id: 'p8', name: 'Natural Cork Bark Tubes', price: 25, stock: 35, category: 'Enclosures', desc: 'Provides a secure hiding spot.', image: 'img/Natural_Cork_Bark_Tubes.jpeg' },
+        { id: 'p9', name: 'Live Mealworms (500-Count)', price: 10, stock: 50, category: 'Food', desc: 'Nutritious live mealworms.', image: 'img/Live_Mealworms.jpeg' },
+        { id: 'p10', name: 'Live Dubia Roaches (200-Count)', price: 45, stock: 15, category: 'Food', desc: 'High-protein, low-chitin feeder insects.', image: 'img/Live_Dubia_Roaches.jpeg' },
+        { id: 'p11', name: 'Crested Gecko Diet (Watermelon)', price: 75.99, stock: 30, category: 'Food', desc: 'Complete meal replacement powder.', image: 'img/Crested_Gecko_Diet.jpeg' },
+        { id: 'p12', name: 'Calcium + D3 Supplement', price: 89.99, stock: 100, category: 'Food', desc: 'Essential vitamin powder.', image: 'img/Calcium_and_D3_Supplement.jpeg' }
     ];
     localStorage.setItem('storeCategories', JSON.stringify(localCategories));
     localStorage.setItem('storeProducts', JSON.stringify(localProducts));
